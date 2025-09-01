@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Slider</title>
+
+    <!-- (Optionnel) Bootstrap pour une typo propre -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --slider-w: 900px;
+        --slider-h: 500px;
+      }
+      body {
+        background: #f6f7f9;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto,
+          "Helvetica Neue", Arial;
+      }
+      .wrapper {
+        max-width: var(--slider-w);
+        margin: 48px auto;
+        padding: 0 16px;
+      }
+      .slider {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        max-height: var(--slider-h);
+        background: #000;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      }
+      .slides {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
+      .slide.active {
+        opacity: 1;
+      }
+
+      /* Navigation */
+      .nav-btn {
+        position: absolute;
+        top: 50%;
+        translate: 0 -50%;
+        border: none;
+        background: rgba(0, 0, 0, 0.4);
+        color: #fff;
+        width: 44px;
+        height: 44px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        outline: none;
+        transition: background 0.2s ease;
+        user-select: none;
+      }
+      .nav-btn:hover {
+        background: rgba(0, 0, 0, 0.6);
+      }
+      #prevBtn {
+        left: 12px;
+      }
+      #nextBtn {
+        right: 12px;
+      }
+
+      /* Play/Pause */
+      .toolbar {
+        position: absolute;
+        left: 12px;
+        bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(0, 0, 0, 0.35);
+        padding: 6px 10px;
+        border-radius: 999px;
+      }
+      #playPauseBtn {
+        border: none;
+        background: #ffffff;
+        color: #111;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      /* Dots */
+      .indicators {
+        position: absolute;
+        right: 12px;
+        bottom: 12px;
+        display: flex;
+        gap: 8px;
+        background: rgba(0, 0, 0, 0.35);
+        padding: 6px 10px;
+        border-radius: 999px;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        border: none;
+        background: #d0d5dd;
+        cursor: pointer;
+        outline: none;
+        transition: transform 0.15s ease, background 0.2s ease;
+      }
+      .dot:hover {
+        transform: scale(1.1);
+      }
+      .dot.active {
+        background: #ffffff;
+      }
+
+      /* Titles (optionnel) */
+      .caption {
+        position: absolute;
+        left: 16px;
+        top: 16px;
+        color: #fff;
+        font-weight: 700;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+        letter-spacing: 0.2px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <h1 class="text-center mb-4">🖼️ Image Slider</h1>
+
+      <div
+        class="slider"
+        id="slider"
+        tabindex="0"
+        aria-roledescription="carousel"
+        aria-label="Image Slider"
+      >
+        <div class="slides" id="slides">
+          <!-- Utilise des images externes stables (picsum). Remplace par tes propres images si tu veux -->
+          <img
+            class="slide active"
+            src="https://picsum.photos/seed/slide1/1200/675"
+            alt="Slide 1: Landscape 1"
+            data-index="0"
+          />
+          <img
+            class="slide"
+            src="https://picsum.photos/seed/slide2/1200/675"
+            alt="Slide 2: Landscape 2"
+            data-index="1"
+          />
+          <img
+            class="slide"
+            src="https://picsum.photos/seed/slide3/1200/675"
+            alt="Slide 3: Landscape 3"
+            data-index="2"
+          />
+          <img
+            class="slide"
+            src="https://picsum.photos/seed/slide4/1200/675"
+            alt="Slide 4: Landscape 4"
+            data-index="3"
+          />
+
+          <div class="caption" id="caption">Slide 1 / 4</div>
+        </div>
+
+        <!-- Navigation -->
+        <button
+          id="prevBtn"
+          class="nav-btn"
+          aria-label="Previous slide"
+          title="Previous"
+        >
+          &#10094;
+        </button>
+        <button
+          id="nextBtn"
+          class="nav-btn"
+          aria-label="Next slide"
+          title="Next"
+        >
+          &#10095;
+        </button>
+
+        <!-- Play / Pause -->
+        <div class="toolbar">
+          <button id="playPauseBtn" aria-pressed="true" data-playing="true">
+            Pause
+          </button>
+        </div>
+
+        <!-- Dots -->
+        <div class="indicators" id="indicators" aria-label="Slide indicators">
+          <button
+            class="dot active"
+            data-index="0"
+            aria-label="Go to slide 1"
+          ></button>
+          <button
+            class="dot"
+            data-index="1"
+            aria-label="Go to slide 2"
+          ></button>
+          <button
+            class="dot"
+            data-index="2"
+            aria-label="Go to slide 3"
+          ></button>
+          <button
+            class="dot"
+            data-index="3"
+            aria-label="Go to slide 4"
+          ></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- jQuery + ton script -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Crée un fichier script.js à la racine du projet et implémente la logique -->
+    <script src="./script.js"></script>
+  </body>
+</html>
